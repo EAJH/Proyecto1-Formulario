@@ -9,6 +9,8 @@ val Purple = Color(0xFF8A6D95)
 val Neutral = Color(0xFF77767C)
 
 val Black = Color(0xFF000000)
+val Gray = Color(0xFFEAE7E7)
+val GrayTextField = Color(0xFFDCDCE4)
 
 // Top Bar
 val TopBarColor = Color(0xFFFFFFFF)
