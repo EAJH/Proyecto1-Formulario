@@ -1,6 +1,7 @@
 package com.eajh.proyecto1_formulario
 
 import android.os.Bundle
+import android.util.Patterns
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -27,13 +28,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AirplanemodeActive
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.SportsBasketball
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults.colors
@@ -51,6 +58,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -62,10 +70,17 @@ import androidx.compose.ui.unit.sp
 import com.eajh.proyecto1_formulario.ui.theme.BackgroundApp
 import com.eajh.proyecto1_formulario.ui.theme.Black
 import com.eajh.proyecto1_formulario.ui.theme.DarkBlue
+import com.eajh.proyecto1_formulario.ui.theme.FondoInterest
+import com.eajh.proyecto1_formulario.ui.theme.Gray
 import com.eajh.proyecto1_formulario.ui.theme.GrayTextField
+import com.eajh.proyecto1_formulario.ui.theme.LightBlue
+import com.eajh.proyecto1_formulario.ui.theme.LightRed
 import com.eajh.proyecto1_formulario.ui.theme.Neutral
+import com.eajh.proyecto1_formulario.ui.theme.NormalRed
 import com.eajh.proyecto1_formulario.ui.theme.Proyecto1FormularioTheme
 import com.eajh.proyecto1_formulario.ui.theme.TopBarColor
+import com.joelkanyi.jcomposecountrycodepicker.component.KomposeCountryCodePicker
+import com.joelkanyi.jcomposecountrycodepicker.component.rememberKomposeCountryCodePickerState
 
 /*
 * En el MainActivity solo debe de ir la configuración global (temas, navegación). La
@@ -108,6 +123,32 @@ fun MainScreen(
 
     var gender by rememberSaveable {
         mutableStateOf("")
+    }
+
+    var phoneNumber by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var email by rememberSaveable {
+        mutableStateOf("")
+    }
+
+
+    // La variable que nos va a ayudar a cambiar de estado está vacío inicialmente y va
+    // cambiando en tiempo real dependiendo de lo que haga el usuario en pantalla.
+    var interesesSeleccionados by remember {
+        mutableStateOf(setOf<String>())
+    }
+
+    // Como se explica en el Composable, nos va a ayudar para ver si alguna de las
+    // opciones a seleccionar está dentro del set, si no está, lo agrega. Si sí está, lo
+    // quita.
+    val alHacerClic = { interes: String ->
+        interesesSeleccionados = if (interesesSeleccionados.contains(interes)) {
+            interesesSeleccionados - interes
+        } else {
+            interesesSeleccionados + interes
+        }
     }
 
     /*
@@ -191,7 +232,7 @@ fun MainScreen(
 
                 // Espacio entre texto introductorio y sección 1
                 Spacer(
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(70.dp)
                 )
 
                 // ================== SECCIÓN 1. INFORMACIÓN PERSONAL ===============
@@ -204,7 +245,8 @@ fun MainScreen(
                     // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
                     "Información personal",
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    color = DarkBlue
                 )
 
                 // Espacio entre el título de la sección 1 y los campos del formulario en sí
@@ -345,6 +387,197 @@ fun MainScreen(
                 }
 
 
+                // Espacio entre sección 1 y 2 del formulario
+                Spacer(
+                    modifier = Modifier.size(70.dp)
+                )
+
+                // ================== SECCIÓN 2. INFORMACIÓN DE CONTACTO ===============
+                TituloSeccion(
+                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                    "Información de contacto",
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    color = DarkBlue
+                )
+
+                // Espacio entre el título de la sección 1 y los campos del formulario en sí
+                Spacer(
+                    modifier = Modifier.size(5.dp)
+                )
+
+                // TextField con el campo para ingresar el número de teléfono
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ){
+                        Text(
+                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                            text = "Número telefónico",
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Black,
+                            textAlign = TextAlign.Center       // Centra el texto multilínea
+                        )
+
+                        Spacer(
+                            modifier = Modifier.size(5.dp)
+                        )
+
+                        TextFieldPhoneNumber(
+                            modifier = Modifier,
+                            phoneNumber = phoneNumber,
+                        ) { newPhoneNumber ->
+                            if(newPhoneNumber.length <= 10 && newPhoneNumber.all{it.isDigit()}){
+                                phoneNumber = newPhoneNumber
+                            }
+                        }
+
+                    }
+                }
+
+                // Espacio entre el número de teléfono y el correo electrónico
+                Spacer(
+                    modifier = Modifier.size(10.dp)
+                )
+
+                // TextField con el campo para ingresar el correo electrónico
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ){
+                        Text(
+                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                            text = "Correo electrónico",
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Black,
+                            textAlign = TextAlign.Center       // Centra el texto multilínea
+                        )
+
+                        Spacer(
+                            modifier = Modifier.size(5.dp)
+                        )
+
+                        TextFieldEmail(
+                            modifier = Modifier,
+                            email = email
+                        ) { newEmail ->
+                            email = newEmail
+                        }
+
+
+                    }
+                }
+
+                // Espacio entre sección 2 y 3 del formulario
+                Spacer(
+                    modifier = Modifier.size(70.dp)
+                )
+
+                // ================== SECCIÓN 3. INTERESES ===============
+                TituloSeccion(
+                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                    "Intereses",
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    color = DarkBlue
+                )
+
+                // Espacio entre el título de la sección 2 y los campos del formulario en sí
+                Spacer(
+                    modifier = Modifier.size(10.dp)
+                )
+
+                // TextField con el campo para ingresar el correo electrónico
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    // Contenedor principal de las filas (espacio vertical entre renglones)
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+                        // --- PRIMER RENGLÓN ---
+                        Row(
+                            modifier = Modifier
+                            .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            InteresesOpcion(
+                                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                                text = "Música",
+                                icon = Icons.Default.MusicNote,
+                                isSelected = interesesSeleccionados.contains("Música"),
+                                onClick = { alHacerClic("Música") }
+                            )
+                            InteresesOpcion(
+                                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                                text = "Deportes",
+                                icon = Icons.Default.SportsBasketball,
+                                isSelected = interesesSeleccionados.contains("Deportes"),
+                                onClick = { alHacerClic("Deportes") }
+                            )
+                            InteresesOpcion(
+                                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                                text = "Tech",
+                                icon = Icons.Default.Computer,
+                                isSelected = interesesSeleccionados.contains("Tech"),
+                                onClick = { alHacerClic("Tech") }
+                            )
+                        }
+                        // --- SEGUNDO RENGLÓN ---
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            InteresesOpcion(
+                                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                                text = "Viajes",
+                                icon = Icons.Default.AirplanemodeActive,
+                                isSelected = interesesSeleccionados.contains("Viajes"),
+                                onClick = { alHacerClic("Viajes") }
+                            )
+
+                            InteresesOpcion(
+                                text = "Cocina",
+                                icon = Icons.Default.Restaurant,
+                                isSelected = interesesSeleccionados.contains("Cocina"),
+                                onClick = { alHacerClic("Cocina") }
+                            )
+                        }
+                    }
+                }
+
+
+                // Espacio entre sección 3 y 4 del formulario
+                Spacer(
+                    modifier = Modifier.size(70.dp)
+                )
+
+                // ================== SECCIÓN 4. DESCRIPCIÓN DEL PERFIL ===============
+                TituloSeccion(
+                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                    "Sobre mí",
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    color = DarkBlue
+                )
+
+                // Espacio entre el título de la sección 2 y los campos del formulario en sí
+                Spacer(
+                    modifier = Modifier.size(10.dp)
+                )
 
             }
 
@@ -388,7 +621,7 @@ fun TopBar(
 
 // ============================= TÍTULOS DE SECCIONES DE FORMULARIO =============================
 @Composable
-fun TituloSeccion(texto: String, modifier: Modifier = Modifier) {
+fun TituloSeccion(texto: String, modifier: Modifier = Modifier, color: Color) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -399,7 +632,7 @@ fun TituloSeccion(texto: String, modifier: Modifier = Modifier) {
                 .width(4.dp)       // Grosor de la línea
                 .height(24.dp)      // Altura de la línea
                 .clip(CircleShape)  // Orillas redondas
-                .background(DarkBlue)
+                .background(color)
         )
 
         // 2. Espacio entre la línea y el texto
@@ -623,15 +856,184 @@ fun TextFieldGender(
     }
 }
 
-//@Composable
-//fun TextFieldNumber(){
-//
-//}
-//
-//@Composable
-//fun TextFieldEmail(){
-//
-//}
+@Composable
+fun TextFieldPhoneNumber(
+    modifier: Modifier = Modifier,
+    phoneNumber: String,
+    onPhoneNumberChange: (String) -> Unit
+){
+    /*
+    * Biblioteca Kompose Country Code Picker
+    * */
+    // Primero, debemos configurar la bandera y el código en un estado
+    // específico de esta biblioteca
+    val pickerState = rememberKomposeCountryCodePickerState(
+        defaultCountryCode = "MX",
+        showCountryCode = true,
+        showCountryFlag = true
+    )
+    // Composable para mostrar este elemento
+    KomposeCountryCodePicker(
+        modifier = modifier.fillMaxWidth(),
+        text = phoneNumber,
+        onValueChange = { newNumber ->
+            onPhoneNumberChange(newNumber)
+        },
+        state = pickerState,
+        textStyle = TextStyle(
+            color = Neutral
+        ),
+        shape = RoundedCornerShape(12.dp), // Bordes redondeados
+        placeholder = {
+            Text("55 1234 5678", color = Neutral)
+        },
+
+        // Estilo de "TextField" usado a lo largo del formulario
+        colors = colors(
+            focusedContainerColor = GrayTextField,
+            unfocusedContainerColor = GrayTextField,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            cursorColor = Black,
+            focusedTextColor = Black,
+            unfocusedTextColor = Black
+        )
+    )
+
+}
+
+@Composable
+fun TextFieldEmail(
+    modifier: Modifier = Modifier,
+    email: String,
+    onEmailChange: (String) -> Unit
+){
+    // VALIDACIÓN: Es error si el campo NO está vacío y NO hace match con el formato de correo
+    val isError = email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    /*
+    * Parámetro isError: Es como un switch. Al recibir un valor true, sobrescribe instantáneamente
+    * los colores normales del TextField por la paleta de errores y le avisa al sistema operativo
+    * que la entrada es inválida. Sin embargo, no bloquea la capacidad del usuario para seguir
+    * escribiendo ni genera automáticamente un mensaje de error en pantalla; tse debe de programar
+    * la condición lógica que activa este interruptor y dibujar manualmente cualquier texto de
+    * advertencia debajo del campo.
+    * */
+
+    // Usamos un Column para poder poner el mensaje de error debajo del TextField
+    Column(modifier = modifier) {
+        TextField(
+            value = email,
+            onValueChange = { newEmail ->
+                // El .trim() evita que el usuario agregue espacios al final sin querer
+                onEmailChange(newEmail.trim())
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+            placeholder = { Text("ejemplo@correo.com", color = Neutral) },
+
+            // Abre el teclado optimizado para correos, con el @ y .com de rápido acceso
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            isError = isError,
+            colors = colors(
+                focusedContainerColor = GrayTextField,
+                unfocusedContainerColor = GrayTextField,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = Black,
+                focusedTextColor = Black,
+                unfocusedTextColor = Black,
+                // Colores para cuando isError = true
+                errorContainerColor = LightRed, // Cambia el fondo a un rojo muy sutil
+                errorIndicatorColor = Color.Transparent, // Seguimos ocultando la línea inferior de los TextField
+                errorTextColor = Black,
+                errorCursorColor = NormalRed
+            )
+        )
+
+        // Mensaje de error en lo que se escribe correctamente el correo electrónico
+        if (isError) {
+            Text(
+                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                text = "Formato de correo inválido",
+                color = NormalRed,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
+    }
+}
+
+
+// ============================= INTERESES =============================
+/*
+* Todo el proceso funciona como un ciclo automatizado donde la variable de estado
+* (el Set envuelto en mutableStateOf) actúa como una caja de memoria que
+* guarda sin duplicados los nombres de las opciones que el usuario ha elegido; al momento en
+* que el usuario toca un botón, la función alHacerClic actúa como el controlador que actualiza
+* esta caja metiendo la palabra si no estaba o sacándola si ya existía, lo que detona inmediatamente
+* la "recomposición" de Jetpack Compose, obligando a cada componente InteresesOpcion a leer
+* la nueva caja para que, mediante su propio condicional if, decida por sí solo pintarse de
+* azul si encuentra su nombre adentro o de gris si no está, garantizando que la interfaz sea
+* siempre un reflejo exacto y automático de los datos sin tener que programar cambios visuales
+* manualmente.
+*
+* */
+@Composable
+fun InteresesOpcion(
+    text: String,
+    icon: ImageVector,
+    isSelected: Boolean,
+    onClick: () -> Unit
+){
+    // Definimos los colores dependiendo de si está o no seleccionada una opción de
+    // los intereses
+    val backgroundColor: Color
+    val contentColor: Color
+
+    // Se va actualizando este parámetro de acuerdo al set definido en el estado. Por eso
+    // en el clickable, se agregan o quitan Strings de este set, para hacer efectiva estos
+    // cambios de colores
+    if(isSelected){
+       backgroundColor = LightBlue
+       contentColor = Gray
+    } else{
+       backgroundColor = FondoInterest
+       contentColor = Neutral
+    }
+
+    /*
+    * El Surface es como un Box pero con propiedades específicas para poner un
+    * color de fondo más fácilmente.
+    * */
+    Surface(
+        modifier = Modifier
+            .clickable {
+                onClick()
+            },
+        shape = RoundedCornerShape(50),
+        color = backgroundColor,
+        contentColor = contentColor
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp) // Espacio entre ícono y texto
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp) // Íconos pequeños
+            )
+            Text(
+                text = text,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
 
 // ======= Función necesaria para previsualizar la app dentro del IDE =======
 @Preview(showBackground = true)
