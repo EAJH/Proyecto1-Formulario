@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,16 +35,24 @@ import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.SportsBasketball
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults.colors
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -79,8 +88,13 @@ import com.eajh.proyecto1_formulario.ui.theme.Neutral
 import com.eajh.proyecto1_formulario.ui.theme.NormalRed
 import com.eajh.proyecto1_formulario.ui.theme.Proyecto1FormularioTheme
 import com.eajh.proyecto1_formulario.ui.theme.TopBarColor
+import com.eajh.proyecto1_formulario.ui.theme.White
 import com.joelkanyi.jcomposecountrycodepicker.component.KomposeCountryCodePicker
 import com.joelkanyi.jcomposecountrycodepicker.component.rememberKomposeCountryCodePickerState
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 /*
 * En el MainActivity solo debe de ir la configuración global (temas, navegación). La
@@ -130,6 +144,10 @@ fun MainScreen(
     }
 
     var email by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var bioText by rememberSaveable {
         mutableStateOf("")
     }
 
@@ -579,6 +597,74 @@ fun MainScreen(
                     modifier = Modifier.size(10.dp)
                 )
 
+                // TextField con sección "Sobre mí"
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ){
+                        Text(
+                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                            text = "Biografía pública",
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = Black,
+                            textAlign = TextAlign.Center       // Centra el texto multilínea
+                        )
+
+                        Spacer(
+                            modifier = Modifier.size(5.dp)
+                        )
+
+                        TextFieldCommon(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(140.dp),
+                            name = bioText,
+                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                            placeHolderText = "Dile al mundo tus sueños, pasiones o lo que te hace único ..."
+                        ) { newBioText ->
+                            // Definimos un máximo de líneas
+                            if(newBioText.length <= 150){
+                                bioText = newBioText
+                            }
+                        }
+                    }
+                }
+
+                // Espacio entre sección 4 y 5 del formulario
+                Spacer(
+                    modifier = Modifier.size(30.dp)
+                )
+
+                // ================== SECCIÓN 5. BOTÓN DE ENVIAR ===============
+
+                // COMPOSABLE DEL BOTÓN DE ENVIAR
+
+                // Espacio entre el título de la sección 2 y los campos del formulario en sí
+                Spacer(
+                    modifier = Modifier.size(10.dp)
+                )
+
+                ProfileSaveButton(
+                    onClick = {
+                        // Al hacer clic se debe de pasar a la siguiente pantalla y
+                        //mostrar los datos.
+                        // Implementar lo de que se habilite hasta que todos los datos estén
+                        // llenados
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+
+                Spacer(
+                    modifier = Modifier.size(20.dp)
+                )
+
             }
 
         }
@@ -737,6 +823,10 @@ fun TextFieldBirthday(
     date: String,
     onDateChange: (String) -> Unit
 ){
+
+    // Estado para controlar si el calendario se ve o no
+    var showModal by remember { mutableStateOf(false) }
+
     TextField(
         value = date,
         onValueChange = { newDate ->
@@ -746,15 +836,15 @@ fun TextFieldBirthday(
         shape = RoundedCornerShape(12.dp),
         placeholder = {
             Text(
-                text = "mm/dd/yyyy",
+                text = "MM/DD/YYYY",
                 color = Neutral
             )
         },
         // Para agregar un botón que después abrirá un calendario
         trailingIcon = {
             IconButton(onClick = {
-                // !!!!!!!!!!! ========== Agregar funcionalidad ========= !!!!!!!!!!!
-                // DatePicker?? Investigar
+                // Cuando se presione el ícono, cambiamos el estado de showModal a true
+                showModal = true
             }) {
                 Icon(
                     // Ícono por defecto dentro de la biblioteca de Material
@@ -777,7 +867,74 @@ fun TextFieldBirthday(
             unfocusedTextColor = Black
         )
     )
+
+    // El componente flotante de la documentación
+    if (showModal) {
+        DatePickerModal(
+            onDateSelected = { millisSeleccionados ->
+                // Si el usuario eligió una fecha y le dio OK...
+                // Null safety
+                if (millisSeleccionados != null) {
+                    // Convertimos los milisegundos a texto y lo mandamos a tu pantalla principal
+                    val fechaFormateada = convertMillisToDate(millisSeleccionados)
+                    // State hoisting. Se toma el resultado procesado y se escupe hacia arriba de
+                    // este Composable mediante este callback, avisando al MainScreen  que
+                    // hay un nuevo valor disponible para que lo valide
+                    onDateChange(fechaFormateada)
+                }
+            },
+            // Se ejecuta si el usuario da en el botón de Cancel, presionamos fuera del modal
+            // o damos hacia atrás en el teléfono
+            onDismiss = {
+                // Si el usuario le da Cancelar o toca fuera, cerramos el modal
+                showModal = false
+            }
+        )
+    }
+
 }
+
+// Composable encargado de seleccionar la fecha dentro del modal de calendario que
+// Android despliega. Implementación de la documentación
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerModal(
+    // Se pone Long? porque el calendario de Material 3 devuelve un número de este tipo
+    // Este número representa los milisegundos transcurridos desde el 1 de enero de 1970
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                onDateSelected(datePickerState.selectedDateMillis)
+                onDismiss()
+            }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
+}
+
+// Función que permite transformar los milisegundos obtenidos desde el 1 de enero de 1970
+// a la actualidad en una fecha legible con formato de fecha de calendario
+fun convertMillisToDate(millis: Long): String {
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    // Se agrega esta línea para evitar el error del día anterior
+    formatter.timeZone = TimeZone.getTimeZone("UTC")
+    return formatter.format(Date(millis))
+}
+
 
 @Composable
 fun TextFieldGender(
@@ -1034,6 +1191,58 @@ fun InteresesOpcion(
         }
     }
 }
+
+
+// =========================== BOTÓN DE GUARDAR PERFIL ==============================
+@Composable
+fun ProfileSaveButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+    text: String = "Guardar perfil" // Texto predeterminado n
+) {
+    // Botón base
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = DarkBlue,
+            contentColor = White
+        ),
+        // Elevación sutil para el estado habilitado
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 2.dp,
+            pressedElevation = 4.dp
+        ),
+        // Padding interno del contenido
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            // Texto del botón
+            Text(
+                text = text,
+                fontWeight = FontWeight.Bold
+            )
+            // Espaciado pequeño entre el texto y el icono
+            Spacer(modifier = Modifier.width(8.dp))
+            // Ícono de guardar
+            Icon(
+                imageVector = Icons.Default.SaveAlt,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = White
+            )
+        }
+    }
+}
+
+
 
 // ======= Función necesaria para previsualizar la app dentro del IDE =======
 @Preview(showBackground = true)

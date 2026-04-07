@@ -7,6 +7,7 @@ val LightBlue = Color(0xFF2794C1)
 val Purple = Color(0xFF8A6D95)
 
 val Neutral = Color(0xFF77767C)
+val White = Color(0xFFFFFFFF)
 
 val Black = Color(0xFF000000)
 val Gray = Color(0xFFEAE7E7)
