@@ -76,6 +76,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.eajh.proyecto1_formulario.ui.theme.BackgroundApp
 import com.eajh.proyecto1_formulario.ui.theme.Black
 import com.eajh.proyecto1_formulario.ui.theme.DarkBlue
@@ -91,6 +97,7 @@ import com.eajh.proyecto1_formulario.ui.theme.TopBarColor
 import com.eajh.proyecto1_formulario.ui.theme.White
 import com.joelkanyi.jcomposecountrycodepicker.component.KomposeCountryCodePicker
 import com.joelkanyi.jcomposecountrycodepicker.component.rememberKomposeCountryCodePickerState
+import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -107,18 +114,24 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Proyecto1FormularioTheme {
-                MainScreen(
-                    modifier = Modifier.fillMaxSize()
-                )
+//                MainScreen(
+//                    modifier = Modifier.fillMaxSize()
+//                )
+                AppNavigation()
 
             }
         }
     }
 }
 
+// Serializar es convertir los elementos en bits para después pasarlos hacia
+// otro elemento diferente
+
+// Pantalla 1: Principal - Formulario y sus campos
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
+    navController: NavController
 ) {
 
     // Estados TextFields
@@ -183,7 +196,7 @@ fun MainScreen(
                 // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
                 content = "Creación de perfil",
                 onBackClick = {
-                    // Lógica de que al dar en el botón, este se regrese uno en el backstack
+                    navController.popBackStack()
                 },
                 modifier = Modifier
                     .fillMaxWidth()  // Solo ocupa el ancho
@@ -650,12 +663,35 @@ fun MainScreen(
                     modifier = Modifier.size(10.dp)
                 )
 
+                // Validación básica de que no estén vacíos los campos del formulario
+                val formularioLleno = name.isNotBlank() &&
+                        lastName.isNotBlank() &&
+                        birthday.isNotBlank() &&
+                        gender.isNotBlank() &&
+                        phoneNumber.isNotBlank() &&
+                        email.isNotBlank() &&
+                        interesesSeleccionados.isNotEmpty()
+
                 ProfileSaveButton(
+                    text = "Guardar Perfil",
+                    enabled = formularioLleno,
                     onClick = {
-                        // Al hacer clic se debe de pasar a la siguiente pantalla y
-                        //mostrar los datos.
-                        // Implementar lo de que se habilite hasta que todos los datos estén
-                        // llenados
+                        // Convertimos el Set de intereses a Lista
+                        val listaIntereses = interesesSeleccionados.toList()
+
+                        // Viajamos a la siguiente pantalla pasando los datos
+                        navController.navigate(
+                            DataScreenDestination(
+                                name = name,
+                                lastName = lastName,
+                                birthday = birthday,
+                                gender = gender,
+                                phoneNumber = phoneNumber,
+                                email = email,
+                                bioText = bioText,
+                                intereses = listaIntereses
+                            )
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -878,7 +914,7 @@ fun TextFieldBirthday(
                     // Convertimos los milisegundos a texto y lo mandamos a tu pantalla principal
                     val fechaFormateada = convertMillisToDate(millisSeleccionados)
                     // State hoisting. Se toma el resultado procesado y se escupe hacia arriba de
-                    // este Composable mediante este callback, avisando al MainScreen  que
+                    // este Composable mediante este callback, avisando al MainScreen que
                     // hay un nuevo valor disponible para que lo valide
                     onDateChange(fechaFormateada)
                 }
@@ -899,7 +935,7 @@ fun TextFieldBirthday(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
-    // Se pone Long? porque el calendario de Material 3 devuelve un número de este tipo
+    // Se pone "Long?", porque el calendario de Material 3 devuelve un número de este tipo
     // Este número representa los milisegundos transcurridos desde el 1 de enero de 1970
     onDateSelected: (Long?) -> Unit,
     onDismiss: () -> Unit
@@ -1198,9 +1234,8 @@ fun InteresesOpcion(
 fun ProfileSaveButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-    text: String = "Guardar perfil" // Texto predeterminado n
+    enabled: Boolean,
+    text: String
 ) {
     // Botón base
     Button(
@@ -1209,8 +1244,13 @@ fun ProfileSaveButton(
         enabled = enabled,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
+            // Colores para formulario lleno
             containerColor = DarkBlue,
-            contentColor = White
+            contentColor = White,
+
+            // Colores para formulario con campos faltantes
+            disabledContentColor = Neutral.copy(0.5f), // Para que sea un poco transparente
+            disabledContainerColor = Gray
         ),
         // Elevación sutil para el estado habilitado
         elevation = ButtonDefaults.buttonElevation(
@@ -1235,9 +1275,151 @@ fun ProfileSaveButton(
             Icon(
                 imageVector = Icons.Default.SaveAlt,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = White
+                modifier = Modifier.size(20.dp)
+                //tint = White
             )
+        }
+    }
+}
+
+
+// ============================ NAVEGACIÓN ComposeNavigation 2 ====================
+
+@Serializable
+object MainScreenDestination
+
+@Serializable
+data class DataScreenDestination(
+    val name: String,
+    val lastName: String,
+    val birthday: String,
+    val gender: String,
+    val phoneNumber: String,
+    val email: String,
+    val bioText: String,
+    val intereses: List<String> // Convertiremos el Set a List al enviar
+)
+
+
+// Composable con el NavHost
+@Composable
+fun AppNavigation(){
+    // Estado para recordar en que pantalla estamos
+    val navController: NavHostController = rememberNavController()
+
+    // Bloque de navegación
+    NavHost(
+        navController = navController,
+        startDestination = MainScreenDestination
+    ){
+        // Aquí estamos dentro del contexto de nuestro grafo de navegación
+
+        // Pantalla 1: Formulario
+        composable<MainScreenDestination>{
+            // Mandamos a llamar a mi MainScreen
+            MainScreen(navController = navController)
+        }
+
+        // Pantalla 2: Datos a mostrar del formulario
+        composable<DataScreenDestination>{ backStackEntry ->
+            // Recuperamos los datos del formulario
+            val datosFormulario = backStackEntry.toRoute<DataScreenDestination>()
+
+            // Mandamos a llamar a mi DataScreen
+            DataScreen(
+                datos = datosFormulario,
+                navController = navController
+            )
+        }
+    }
+}
+
+
+// Componente auxiliar para mostrar cada par de "Etiqueta: Valor"
+@Composable
+fun DatoFila(
+    etiqueta: String,
+    valor: String
+)
+{
+    Column(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .fillMaxWidth())
+    {
+        Text(
+            text = etiqueta,
+            fontWeight = FontWeight.Bold,
+            color = DarkBlue,
+            fontSize = 14.sp
+        )
+        Text(
+            text = valor,
+            fontSize = 16.sp,
+            color = Black
+        )
+    }
+}
+
+// Composable correspondiente con la pantalla de datos
+@Composable
+fun DataScreen(
+    datos: DataScreenDestination, // Recibe el paquete de datos
+    navController: NavController
+) {
+    Scaffold(
+        topBar = {
+            TopBar(
+                content = "Resumen de Perfil",
+                onBackClick = {
+                    // Esto destruye la DataScreen y se regresa al formulario
+                    // con todos los datos intactos
+                    navController.popBackStack()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(TopBarColor)
+                    .statusBarsPadding()
+                    .height(64.dp)
+                    .padding(horizontal = 8.dp)
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(BackgroundApp)
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()), // Habilitamos scroll por si la bio es larga
+            verticalArrangement = Arrangement.Top
+        ) {
+            Text(
+                text = "Tus datos guardados:",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Black
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Juntamos el nombre y apellido en una sola fila para que se vea mejor
+            DatoFila(etiqueta = "Nombre completo", valor = "${datos.name} ${datos.lastName}")
+            DatoFila(etiqueta = "Fecha de nacimiento", valor = datos.birthday)
+            DatoFila(etiqueta = "Género", valor = datos.gender)
+            DatoFila(etiqueta = "Teléfono", valor = datos.phoneNumber)
+            DatoFila(etiqueta = "Correo", valor = datos.email)
+
+            // Si el usuario escribió una bio, la mostramos
+            if (datos.bioText.isNotBlank()) {
+                DatoFila(etiqueta = "Biografía", valor = datos.bioText)
+            }
+
+            // Convertimos la lista de intereses en un texto separado por comas
+            val textoIntereses = datos.intereses.joinToString(separator = ", ")
+            DatoFila(etiqueta = "Intereses seleccionados", valor = textoIntereses)
+
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
@@ -1245,10 +1427,10 @@ fun ProfileSaveButton(
 
 
 // ======= Función necesaria para previsualizar la app dentro del IDE =======
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    Proyecto1FormularioTheme {
-        MainScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun MainScreenPreview() {
+//    Proyecto1FormularioTheme {
+//        MainScreen()
+//    }
+//}
