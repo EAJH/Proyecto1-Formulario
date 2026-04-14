@@ -73,7 +73,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -95,6 +94,7 @@ import com.eajh.proyecto1_formulario.ui.theme.NormalRed
 import com.eajh.proyecto1_formulario.ui.theme.Proyecto1FormularioTheme
 import com.eajh.proyecto1_formulario.ui.theme.TopBarColor
 import com.eajh.proyecto1_formulario.ui.theme.White
+import com.joelkanyi.jcomposecountrycodepicker.component.CountryCodePicker
 import com.joelkanyi.jcomposecountrycodepicker.component.KomposeCountryCodePicker
 import com.joelkanyi.jcomposecountrycodepicker.component.rememberKomposeCountryCodePickerState
 import kotlinx.serialization.Serializable
@@ -156,6 +156,17 @@ fun MainScreen(
         mutableStateOf("")
     }
 
+    /*
+    * Biblioteca Kompose Country Code Picker
+    * */
+    // Primero, debemos configurar la bandera y el código en un estado
+    // específico de esta biblioteca
+    val pickerState = rememberKomposeCountryCodePickerState(
+        defaultCountryCode = "MX",
+        showCountryCode = true,
+        showCountryFlag = true
+    )
+
     var email by rememberSaveable {
         mutableStateOf("")
     }
@@ -167,7 +178,7 @@ fun MainScreen(
 
     // La variable que nos va a ayudar a cambiar de estado está vacío inicialmente y va
     // cambiando en tiempo real dependiendo de lo que haga el usuario en pantalla.
-    var interesesSeleccionados by remember {
+    var interesesSeleccionados by rememberSaveable {
         mutableStateOf(setOf<String>())
     }
 
@@ -192,12 +203,9 @@ fun MainScreen(
                              // debajo de la barra de estado de Android (hora, notificaciones)
         topBar = {
             // Mandamos a llamar a la función TopBar
-            TopBar(
+            TopBarInicial(
                 // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
                 content = "Creación de perfil",
-                onBackClick = {
-                    navController.popBackStack()
-                },
                 modifier = Modifier
                     .fillMaxWidth()  // Solo ocupa el ancho
                     .background(TopBarColor)
@@ -315,7 +323,10 @@ fun MainScreen(
                             placeHolderText = "Nombre"
                         ) { newName ->
                             // Definimos un máximo de líneas
-                            if(newName.length <= 10 && newName.all{it.isLetter()}){
+                            // Se permiten espacios en blanco por si son nombres compuestos o se quiere ingresar
+                            // alguna sugerencia del teclado (que automáticamente agregan un espacio en blanco
+                            // al final tras el autocompletado)
+                            if(newName.length <= 20 && newName.all { it.isLetter() || it.isWhitespace() }){
                                 name = newName
                             }
                         }
@@ -344,7 +355,7 @@ fun MainScreen(
                             placeHolderText = "Apellido"
                         ) { newLastName ->
                             // Definimos un máximo de líneas
-                            if(newLastName.length <= 10 && newLastName.all{it.isLetter()}){
+                            if(newLastName.length <= 20 && newLastName.all { it.isLetter() || it.isWhitespace() }){
                                 lastName = newLastName
                             }
                         }
@@ -463,6 +474,7 @@ fun MainScreen(
                         TextFieldPhoneNumber(
                             modifier = Modifier,
                             phoneNumber = phoneNumber,
+                            pickerState = pickerState
                         ) { newPhoneNumber ->
                             if(newPhoneNumber.length <= 10 && newPhoneNumber.all{it.isDigit()}){
                                 phoneNumber = newPhoneNumber
@@ -679,6 +691,9 @@ fun MainScreen(
                         // Convertimos el Set de intereses a Lista
                         val listaIntereses = interesesSeleccionados.toList()
 
+                        // Obtenemos el número completo (con extensión)
+                        val numeroCompleto = pickerState.getFullPhoneNumber()
+
                         // Viajamos a la siguiente pantalla pasando los datos
                         navController.navigate(
                             DataScreenDestination(
@@ -686,7 +701,7 @@ fun MainScreen(
                                 lastName = lastName,
                                 birthday = birthday,
                                 gender = gender,
-                                phoneNumber = phoneNumber,
+                                phoneNumber = numeroCompleto,
                                 email = email,
                                 bioText = bioText,
                                 intereses = listaIntereses
@@ -708,7 +723,26 @@ fun MainScreen(
 }
 
 // ============================= TOP BAR =============================
-// Función que se encarga de generar el Composable de mi TopBar
+// Función que se encarga de generar el Composable de mi TopBarInicial y TopBar normal (DataScreen)
+@Composable
+fun TopBarInicial(
+    content: String,
+    modifier: Modifier = Modifier
+){
+    Box(
+        modifier = modifier
+    ){
+        Text(
+            text = content,
+            fontFamily = FontFamily(Font(R.font.manrope_regular)),
+            fontSize = 20.sp,
+            modifier = Modifier.align(Alignment.Center), // Centra el texto
+            fontWeight = FontWeight.Bold,
+            color = Black
+        )
+    }
+}
+
 @Composable
 fun TopBar(
     content: String,
@@ -851,83 +885,76 @@ fun TextFieldCommon(
     )
 }
 
-// ===============!!!!!!!!!!!!!!!!! MODIFICACIÓN!!!!!!!!!!!!!!!!! ===============
-// Agregar que funcione el ícono de calendario para que no puedan escribir en este campo
 @Composable
 fun TextFieldBirthday(
     modifier: Modifier = Modifier,
     date: String,
     onDateChange: (String) -> Unit
 ){
-
     // Estado para controlar si el calendario se ve o no
     var showModal by remember { mutableStateOf(false) }
 
-    TextField(
-        value = date,
-        onValueChange = { newDate ->
-            onDateChange(newDate)
-        },
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        placeholder = {
-            Text(
-                text = "MM/DD/YYYY",
-                color = Neutral
-            )
-        },
-        // Para agregar un botón que después abrirá un calendario
-        trailingIcon = {
-            IconButton(onClick = {
-                // Cuando se presione el ícono, cambiamos el estado de showModal a true
-                showModal = true
-            }) {
+    // Envolvemos el TextField en un Box principal
+    Box(modifier = modifier) {
+
+        // El TextField ahora es solo lectura para que la aplicación no intente abrir
+        // el teclado
+        TextField(
+            value = date,
+            onValueChange = {},
+            readOnly = true,
+            modifier = Modifier.fillMaxWidth(), // El TextField ocupa todo el Box padre
+            shape = RoundedCornerShape(12.dp),
+            placeholder = {
+                Text(
+                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+                    text = "MM/DD/YYYY",
+                    color = Neutral
+                )
+            },
+            trailingIcon = {
+                // Ya no necesitamos el IconButton aquí, porque toda la caja será clickable,
+                // así que dejamos solo el Icon
                 Icon(
-                    // Ícono por defecto dentro de la biblioteca de Material
                     imageVector = Icons.Default.DateRange,
                     // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
                     contentDescription = "Seleccionar fecha de nacimiento",
                     tint = Neutral
                 )
-            }
-        },
-        // Teclado numérico si el usuario decide escribir la fecha a mano
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        // Colores para quitar la línea inferior del TextField y definir el fondo de este
-        colors = colors(
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = GrayTextField,
-            unfocusedContainerColor = GrayTextField,
-            focusedTextColor = Black,
-            unfocusedTextColor = Black
+            },
+            colors = colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = GrayTextField,
+                unfocusedContainerColor = GrayTextField,
+                focusedTextColor = Black,
+                unfocusedTextColor = Black
+            )
         )
-    )
 
-    // El componente flotante de la documentación
+        //  Este Box invisible se pone encima y atrapa el clic de toda el área
+        Box(
+            modifier = Modifier
+                .matchParentSize() // Toma el tamaño exacto del TextField
+                .clickable {
+                    showModal = true // Abre el calendario
+                }
+        )
+    }
+
     if (showModal) {
         DatePickerModal(
             onDateSelected = { millisSeleccionados ->
-                // Si el usuario eligió una fecha y le dio OK...
-                // Null safety
                 if (millisSeleccionados != null) {
-                    // Convertimos los milisegundos a texto y lo mandamos a tu pantalla principal
                     val fechaFormateada = convertMillisToDate(millisSeleccionados)
-                    // State hoisting. Se toma el resultado procesado y se escupe hacia arriba de
-                    // este Composable mediante este callback, avisando al MainScreen que
-                    // hay un nuevo valor disponible para que lo valide
                     onDateChange(fechaFormateada)
                 }
             },
-            // Se ejecuta si el usuario da en el botón de Cancel, presionamos fuera del modal
-            // o damos hacia atrás en el teléfono
             onDismiss = {
-                // Si el usuario le da Cancelar o toca fuera, cerramos el modal
                 showModal = false
             }
         )
     }
-
 }
 
 // Composable encargado de seleccionar la fecha dentro del modal de calendario que
@@ -1053,18 +1080,10 @@ fun TextFieldGender(
 fun TextFieldPhoneNumber(
     modifier: Modifier = Modifier,
     phoneNumber: String,
+    pickerState: CountryCodePicker,
     onPhoneNumberChange: (String) -> Unit
 ){
-    /*
-    * Biblioteca Kompose Country Code Picker
-    * */
-    // Primero, debemos configurar la bandera y el código en un estado
-    // específico de esta biblioteca
-    val pickerState = rememberKomposeCountryCodePickerState(
-        defaultCountryCode = "MX",
-        showCountryCode = true,
-        showCountryFlag = true
-    )
+
     // Composable para mostrar este elemento
     KomposeCountryCodePicker(
         modifier = modifier.fillMaxWidth(),
@@ -1398,7 +1417,9 @@ fun DataScreen(
                 text = "Tus datos guardados:",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Black
+                color = Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -1424,13 +1445,3 @@ fun DataScreen(
     }
 }
 
-
-
-// ======= Función necesaria para previsualizar la app dentro del IDE =======
-//@Preview(showBackground = true)
-//@Composable
-//fun MainScreenPreview() {
-//    Proyecto1FormularioTheme {
-//        MainScreen()
-//    }
-//}
