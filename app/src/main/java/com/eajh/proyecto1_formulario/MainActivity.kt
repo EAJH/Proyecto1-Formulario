@@ -99,6 +99,10 @@ import com.joelkanyi.jcomposecountrycodepicker.component.KomposeCountryCodePicke
 import com.joelkanyi.jcomposecountrycodepicker.component.rememberKomposeCountryCodePickerState
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -385,13 +389,30 @@ fun MainScreen(
                             textAlign = TextAlign.Center       // Centra el texto multilínea
                         )
 
-                        TextFieldBirthday(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(0.dp, 5.dp),
-                            date = birthday
-                        ) { newBirthday ->
-                            birthday = newBirthday
+                        // Mensaje de error si la fecha no es válida
+                        val edadValida = tieneMinimo13(birthday)
+                        val mostrarErrorEdad = birthday.isNotBlank() && !edadValida
+
+
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            TextFieldBirthday(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(0.dp, 5.dp),
+                                date = birthday
+                            ) { newBirthday ->
+                                birthday = newBirthday
+                            }
+
+                            // Mensaje de error si la fecha ya se llenó pero no da 13 años
+                            if (mostrarErrorEdad) {
+                                Text(
+                                    text = "Debes tener al menos 13 años para registrarte",
+                                    color = NormalRed, // Tu color rojo
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -675,20 +696,22 @@ fun MainScreen(
                     modifier = Modifier.size(10.dp)
                 )
 
+                // Guardamos el resultado de la edad en una variable para usarla fácilmente
+                val edadValida = tieneMinimo13(birthday)
+
                 // Validación básica de que no estén vacíos los campos del formulario
                 val formularioLleno = name.isNotBlank() &&
                         lastName.isNotBlank() &&
-                        birthday.isNotBlank() &&
+                        edadValida &&
                         gender.isNotBlank() &&
                         phoneNumber.isNotBlank() &&
-                        email.isNotBlank() &&
-                        interesesSeleccionados.isNotEmpty()
+                        Patterns.EMAIL_ADDRESS.matcher(email).matches() // Repetimos validación del Composable pero viendo que sí sea un formato válido
 
                 ProfileSaveButton(
                     text = "Guardar Perfil",
                     enabled = formularioLleno,
                     onClick = {
-                        // Convertimos el Set de intereses a Lista
+
                         val listaIntereses = interesesSeleccionados.toList()
 
                         // Obtenemos el número completo (con extensión)
@@ -992,12 +1015,38 @@ fun DatePickerModal(
 // Función que permite transformar los milisegundos obtenidos desde el 1 de enero de 1970
 // a la actualidad en una fecha legible con formato de fecha de calendario
 fun convertMillisToDate(millis: Long): String {
+                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
     val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     // Se agrega esta línea para evitar el error del día anterior
     formatter.timeZone = TimeZone.getTimeZone("UTC")
     return formatter.format(Date(millis))
 }
 
+// Función que se encarga de validar que el usuario tenga mínimo 13 años cumplidos
+fun tieneMinimo13(fechaNacimiento: String): Boolean {
+    // Si está vacío, ni siquiera calculamos
+    if (fechaNacimiento.isBlank()) return false
+
+    return try {
+        // Le decimos a Kotlin cómo está escrita nuestra fecha
+        // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
+        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+        val fechaNac = LocalDate.parse(fechaNacimiento, formatter)
+
+        // Obtenemos la fecha del celular hoy
+        val hoy = LocalDate.now()
+
+        // Calculamos el periodo exacto entre las dos fechas
+        val edad = Period.between(fechaNac, hoy).years
+
+        // Retorna verdadero si tiene 13 o más
+        edad >= 13
+
+    } catch (e: DateTimeParseException) {
+        // Si el usuario escribió algo que no es una fecha válida, retorna falso
+        false
+    }
+}
 
 @Composable
 fun TextFieldGender(
@@ -1436,9 +1485,12 @@ fun DataScreen(
                 DatoFila(etiqueta = "Biografía", valor = datos.bioText)
             }
 
-            // Convertimos la lista de intereses en un texto separado por comas
-            val textoIntereses = datos.intereses.joinToString(separator = ", ")
-            DatoFila(etiqueta = "Intereses seleccionados", valor = textoIntereses)
+            // Si el usuario seleccionó intereses (la lista no está vacía)
+            if(datos.intereses.isNotEmpty()){
+                val textoIntereses = datos.intereses.joinToString(separator = ", ")
+                DatoFila(etiqueta = "Intereses seleccionados", valor = textoIntereses)
+            }
+
 
             Spacer(modifier = Modifier.height(40.dp))
         }
