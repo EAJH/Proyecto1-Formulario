@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Project1-Formulary</string>
+    <!-- TOP BAR -->
+    <string name="top_bar_text">Profile Creation</string>
+
+    <!-- Ícono de perfil -->
+    <string name="titulo_icono_perfil">Fill in your data</string>
+    <string name="mensaje_introductorio">Complete the following fields to begin</string>
+
+    <!-- ================== SECCIÓN 1. INFORMACIÓN PERSONAL =============== -->
+    <string name="titulo_seccion_1">Personal information</string>
+    <string name="seccion_1_nombre">Name</string>
+    <string name="seccion_1_nombre_placeholder">Name</string>
+    <string name="seccion_1_apellido">Last Name</string>
+    <string name="seccion_1_apellido_placeholder">Last Name</string>
+    <string name="seccion_1_titulo_fecha_nacimiento">Birthdate</string>
+    <string name="seccion_1_fecha_nacimiento_error">You must be at least 13 years old to register</string>
+    <string name="seccion_1_titulo_genero">Gender</string>
+
+    <!-- ================== SECCIÓN 2. INFORMACIÓN DE CONTACTO =============== -->
+
+    <!-- ================== SECCIÓN FINAL. COMPOSABLES =============== -->
+</resources>

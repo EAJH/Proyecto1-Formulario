@@ -12,7 +12,7 @@ val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
 val Gray = Color(0xFFEAE7E7)
 val GrayTextField = Color(0xFFDCDCE4)
-val DarkGreen = Color(0xFF347B39)
+
 val LightRed = Color(0xFFFFE6E6)
 val NormalRed = Color(0xFFD43030)
 

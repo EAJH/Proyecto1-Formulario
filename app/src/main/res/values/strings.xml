@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Proyecto1-Formulario</string>
+    <!-- TOP BAR -->
+    <string name="top_bar_text">Creación de perfil</string>
+
+    <!-- Ícono de perfil -->
+    <string name="titulo_icono_perfil">Ingresa tus datos</string>
+    <string name="mensaje_introductorio">Completa los siguientes campos para iniciar</string>
+
+    <!-- ================== SECCIÓN 1. INFORMACIÓN PERSONAL =============== -->
+    <string name="titulo_seccion_1">Información personal</string>
+    <string name="seccion_1_nombre">Nombre</string>
+    <string name="seccion_1_nombre_placeholder">Nombre</string>
+    <string name="seccion_1_apellido">Apellido</string>
+    <string name="seccion_1_apellido_placeholder">Apellido</string>
+    <string name="seccion_1_titulo_fecha_nacimiento">Fecha de nacimiento</string>
+    <string name="seccion_1_fecha_nacimiento_error">Debes tener al menos 13 años para registrarte</string>
+    <string name="seccion_1_titulo_genero">Género</string>
+
+    <!-- ================== SECCIÓN 2. INFORMACIÓN DE CONTACTO =============== -->
+
+    <!-- ================== SECCIÓN FINAL. COMPOSABLES =============== -->
 </resources>

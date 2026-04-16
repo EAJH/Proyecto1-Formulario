@@ -66,6 +66,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -118,11 +119,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Proyecto1FormularioTheme {
-//                MainScreen(
-//                    modifier = Modifier.fillMaxSize()
-//                )
                 AppNavigation()
-
             }
         }
     }
@@ -208,8 +205,7 @@ fun MainScreen(
         topBar = {
             // Mandamos a llamar a la función TopBar
             TopBarInicial(
-                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                content = "Creación de perfil",
+                content = stringResource(R.string.top_bar_text),
                 modifier = Modifier
                     .fillMaxWidth()  // Solo ocupa el ancho
                     .background(TopBarColor)
@@ -254,8 +250,7 @@ fun MainScreen(
 
                 // Título
                 Text(
-                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                    text = "Ingresa tus datos",
+                    text = stringResource(R.string.titulo_icono_perfil),
                     fontFamily = FontFamily(Font(R.font.manrope_regular)),
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
@@ -264,13 +259,12 @@ fun MainScreen(
 
                 // Mensaje introductorio
                 Text(
-                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                    text = "Completa los siguientes campos para iniciar",
+                    text = stringResource(R.string.mensaje_introductorio),
                     fontFamily = FontFamily(Font(R.font.inter_regular)),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
                     color = Black,
-                    textAlign = TextAlign.Center                     // Centra el texto multilínea
+                    textAlign = TextAlign.Center   // Centra el texto multilínea
                 )
 
                 // Espacio entre texto introductorio y sección 1
@@ -285,8 +279,7 @@ fun MainScreen(
                     * de reescribir toda la función
                     * */
                 TituloSeccion(
-                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                    "Información personal",
+                    stringResource(R.string.titulo_seccion_1),
                     modifier = Modifier
                         .fillMaxWidth(),
                     color = DarkBlue
@@ -310,8 +303,7 @@ fun MainScreen(
                                         // solo uso esto dos veces
                     ){
                         Text(
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            text = "Nombre",
+                            text = stringResource(R.string.seccion_1_nombre),
                             fontFamily = FontFamily(Font(R.font.inter_regular)),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Normal,
@@ -323,8 +315,7 @@ fun MainScreen(
                                 .fillMaxWidth()
                                 .padding(0.dp, 5.dp),
                             name = name,
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            placeHolderText = "Nombre"
+                            placeHolderText = stringResource(R.string.seccion_1_nombre_placeholder)
                         ) { newName ->
                             // Definimos un máximo de líneas
                             // Se permiten espacios en blanco por si son nombres compuestos o se quiere ingresar
@@ -342,8 +333,7 @@ fun MainScreen(
                             .weight(1f) // Ocupa la otra mitad exacta del Row
                     ){
                         Text(
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            text = "Apellido",
+                            text = stringResource(R.string.seccion_1_apellido),
                             fontFamily = FontFamily(Font(R.font.inter_regular)),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Normal,
@@ -355,8 +345,7 @@ fun MainScreen(
                                 .fillMaxWidth()
                                 .padding(0.dp, 5.dp),
                             name = lastName,
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            placeHolderText = "Apellido"
+                            placeHolderText = stringResource(R.string.seccion_1_apellido_placeholder)
                         ) { newLastName ->
                             // Definimos un máximo de líneas
                             if(newLastName.length <= 20 && newLastName.all { it.isLetter() || it.isWhitespace() }){
@@ -380,8 +369,7 @@ fun MainScreen(
                             .fillMaxWidth()
                     ){
                         Text(
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            text = "Fecha de nacimiento",
+                            text = stringResource(R.string.seccion_1_titulo_fecha_nacimiento),
                             fontFamily = FontFamily(Font(R.font.inter_regular)),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Normal,
@@ -407,7 +395,7 @@ fun MainScreen(
                             // Mensaje de error si la fecha ya se llenó pero no da 13 años
                             if (mostrarErrorEdad) {
                                 Text(
-                                    text = "Debes tener al menos 13 años para registrarte",
+                                    text = stringResource(R.string.seccion_1_fecha_nacimiento_error),
                                     color = NormalRed, // Tu color rojo
                                     fontSize = 12.sp,
                                     modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -431,8 +419,7 @@ fun MainScreen(
                             .fillMaxWidth()
                     ){
                         Text(
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            text = "Género",
+                            text = stringResource(R.string.seccion_1_titulo_genero),
                             fontFamily = FontFamily(Font(R.font.inter_regular)),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Normal,
