@@ -19,6 +19,67 @@
     <string name="seccion_1_titulo_genero">Gender</string>
 
     <!-- ================== SECCIÓN 2. INFORMACIÓN DE CONTACTO =============== -->
+    <string name="titulo_seccion_2">Contact information</string>
+    <string name="seccion_2_numero_telefono">Phone number</string>
+    <string name="seccion_2_email">E-mail</string>
+
+    <!-- ================== SECCIÓN 3. INTERESES =============== -->
+    <string name="titulo_seccion_3">Interests</string>
+    <string name="seccion_3_musica">Music</string>
+    <string name="seccion_3_deportes">Sports</string>
+    <string name="seccion_3_tech">Tech</string>
+    <string name="seccion_3_viajes">Travel</string>
+    <string name="seccion_3_cocina">Cooking</string>
+
+    <!-- ================== SECCIÓN 4. DESCRIPCIÓN DEL PERFIL =============== -->
+    <string name="titulo_seccion_4">About Me</string>
+    <string name="seccion_4_biografia">Public Bio</string>
+    <string name="seccion_4_biografia_placeholder">Tell the world your dreams, passions and what makes you unique</string>
+
+    <!-- ================== SECCIÓN 5. BOTÓN DE ENVIAR =============== -->
+    <string name="seccion_5_texto_boton">Save profile</string>
 
     <!-- ================== SECCIÓN FINAL. COMPOSABLES =============== -->
+    <!-- ============ Composable TopBar ========= -->
+    <string name="top_bar_content_description">Back</string>
+
+    <!-- ============ Composable FotoPerfil ========= -->
+    <string name="foto_perfil_content_description">Profile picture</string>
+    <string name="foto_perfil_icono_content_description">Change profile picture</string>
+
+    <!-- ============ Composable TextFieldBirthday ========= -->
+    <string name="formato_fecha_visual">MM/DD/YYYY</string>
+    <string name="formato_fecha_logica">MM/dd/yyyy</string>
+    <string name="cumpleanos_icono_content_description">Choose your birthdate</string>
+
+    <!-- ============ Composable DatePickerModal ========= -->
+    <string name="texto_ok">OK</string>
+    <string name="texto_cancel">Cancel</string>
+
+    <!-- ============ Composable TextFieldBirthday ========= -->
+    <string name="opciones_hombre">Male</string>
+    <string name="opciones_mujer">Female</string>
+    <string name="textfield_visual_genero">Select your gender</string>
+    <string name="icono_genero_content_description">Dropdown menu</string>
+
+    <!-- ============ Composable TextFieldPhoneNumber ========= -->
+    <string name="country_code_picker_placeholder">55 1234 5678</string>
+
+    <!-- ============ Composable TextFieldEmail ========= -->
+    <string name="text_placeholder_email">example@email.com</string>
+    <string name="error_email">Not valid email format</string>
+
+    <!-- ============ Composable DataScreen ========= -->
+    <string name="data_screen_top_bar_content">Profile summary</string>
+    <string name="data_screen_titulo">Your data:</string>
+    <string name="data_screen_nombre_completo">Full name:</string>
+    <string name="data_screen_birthdate">Day of birth:</string>
+    <string name="data_screen_gender">Gender:</string>
+    <string name="data_screen_phone_number">Phone number:</string>
+    <string name="data_screen_email">E-mail:</string>
+    <string name="data_screen_bio">Bio:</string>
+    <string name="data_screen_intereses">Selected interests:</string>
+    <string name="data_screen_intereses_separador">, </string>
+
+
 </resources>

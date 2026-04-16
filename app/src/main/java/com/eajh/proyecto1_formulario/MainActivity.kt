@@ -376,9 +376,11 @@ fun MainScreen(
                             color = Black,
                             textAlign = TextAlign.Center       // Centra el texto multilínea
                         )
+                        // Extraemos los datos del archivo de strings
+                        val formatoLogica = stringResource(R.string.formato_fecha_logica)
 
                         // Mensaje de error si la fecha no es válida
-                        val edadValida = tieneMinimo13(birthday)
+                        val edadValida = tieneMinimo13(birthday, formatoLogica)
                         val mostrarErrorEdad = birthday.isNotBlank() && !edadValida
 
 
@@ -444,8 +446,7 @@ fun MainScreen(
 
                 // ================== SECCIÓN 2. INFORMACIÓN DE CONTACTO ===============
                 TituloSeccion(
-                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                    "Información de contacto",
+                    stringResource(R.string.titulo_seccion_2),
                     modifier = Modifier
                         .fillMaxWidth(),
                     color = DarkBlue
@@ -466,8 +467,7 @@ fun MainScreen(
                             .fillMaxWidth()
                     ){
                         Text(
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            text = "Número telefónico",
+                            text = stringResource(R.string.seccion_2_numero_telefono),
                             fontFamily = FontFamily(Font(R.font.inter_regular)),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Normal,
@@ -507,8 +507,7 @@ fun MainScreen(
                             .fillMaxWidth()
                     ){
                         Text(
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            text = "Correo electrónico",
+                            text = stringResource(R.string.seccion_2_email),
                             fontFamily = FontFamily(Font(R.font.inter_regular)),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Normal,
@@ -538,14 +537,13 @@ fun MainScreen(
 
                 // ================== SECCIÓN 3. INTERESES ===============
                 TituloSeccion(
-                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                    "Intereses",
+                    stringResource(R.string.titulo_seccion_3),
                     modifier = Modifier
                         .fillMaxWidth(),
                     color = DarkBlue
                 )
 
-                // Espacio entre el título de la sección 2 y los campos del formulario en sí
+                // Espacio entre el título de la sección 3 y los campos del formulario en sí
                 Spacer(
                     modifier = Modifier.size(10.dp)
                 )
@@ -564,26 +562,27 @@ fun MainScreen(
                             .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
+                            val textoMusica = stringResource(R.string.seccion_3_musica)
+                            val textoDeportes = stringResource(R.string.seccion_3_deportes)
+                            val textoTech = stringResource(R.string.seccion_3_tech)
+
                             InteresesOpcion(
-                                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                                text = "Música",
+                                text = textoMusica,
                                 icon = Icons.Default.MusicNote,
-                                isSelected = interesesSeleccionados.contains("Música"),
-                                onClick = { alHacerClic("Música") }
+                                isSelected = interesesSeleccionados.contains(textoMusica),
+                                onClick = { alHacerClic(textoMusica) }
                             )
                             InteresesOpcion(
-                                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                                text = "Deportes",
+                                text = textoDeportes,
                                 icon = Icons.Default.SportsBasketball,
-                                isSelected = interesesSeleccionados.contains("Deportes"),
-                                onClick = { alHacerClic("Deportes") }
+                                isSelected = interesesSeleccionados.contains(textoDeportes),
+                                onClick = { alHacerClic(textoDeportes) }
                             )
                             InteresesOpcion(
-                                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                                text = "Tech",
+                                text = textoTech,
                                 icon = Icons.Default.Computer,
-                                isSelected = interesesSeleccionados.contains("Tech"),
-                                onClick = { alHacerClic("Tech") }
+                                isSelected = interesesSeleccionados.contains(textoTech),
+                                onClick = { alHacerClic(textoTech) }
                             )
                         }
                         // --- SEGUNDO RENGLÓN ---
@@ -592,19 +591,21 @@ fun MainScreen(
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
+                            val textoViajes = stringResource(R.string.seccion_3_viajes)
+                            val textoCocina = stringResource(R.string.seccion_3_cocina)
+
                             InteresesOpcion(
-                                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                                text = "Viajes",
+                                text = textoViajes,
                                 icon = Icons.Default.AirplanemodeActive,
-                                isSelected = interesesSeleccionados.contains("Viajes"),
-                                onClick = { alHacerClic("Viajes") }
+                                isSelected = interesesSeleccionados.contains(textoViajes),
+                                onClick = { alHacerClic(textoViajes) }
                             )
 
                             InteresesOpcion(
-                                text = "Cocina",
+                                text = textoCocina,
                                 icon = Icons.Default.Restaurant,
-                                isSelected = interesesSeleccionados.contains("Cocina"),
-                                onClick = { alHacerClic("Cocina") }
+                                isSelected = interesesSeleccionados.contains(textoCocina),
+                                onClick = { alHacerClic(textoCocina) }
                             )
                         }
                     }
@@ -618,14 +619,13 @@ fun MainScreen(
 
                 // ================== SECCIÓN 4. DESCRIPCIÓN DEL PERFIL ===============
                 TituloSeccion(
-                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                    "Sobre mí",
+                    stringResource(R.string.titulo_seccion_4),
                     modifier = Modifier
                         .fillMaxWidth(),
                     color = DarkBlue
                 )
 
-                // Espacio entre el título de la sección 2 y los campos del formulario en sí
+                // Espacio entre el título de la sección 4 y los campos del formulario en sí
                 Spacer(
                     modifier = Modifier.size(10.dp)
                 )
@@ -640,8 +640,7 @@ fun MainScreen(
                             .fillMaxWidth()
                     ){
                         Text(
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            text = "Biografía pública",
+                            text = stringResource(R.string.seccion_4_biografia),
                             fontFamily = FontFamily(Font(R.font.inter_regular)),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Normal,
@@ -658,8 +657,7 @@ fun MainScreen(
                                 .fillMaxWidth()
                                 .height(140.dp),
                             name = bioText,
-                            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                            placeHolderText = "Dile al mundo tus sueños, pasiones o lo que te hace único ..."
+                            placeHolderText = stringResource(R.string.seccion_4_biografia_placeholder)
                         ) { newBioText ->
                             // Definimos un máximo de líneas
                             if(newBioText.length <= 150){
@@ -676,15 +674,15 @@ fun MainScreen(
 
                 // ================== SECCIÓN 5. BOTÓN DE ENVIAR ===============
 
-                // COMPOSABLE DEL BOTÓN DE ENVIAR
-
-                // Espacio entre el título de la sección 2 y los campos del formulario en sí
+                // Espacio entre el título de la sección 4 y el botón
                 Spacer(
                     modifier = Modifier.size(10.dp)
                 )
+                // Extraemos los datos del archivo strings
+                val formatoLogica = stringResource(R.string.formato_fecha_logica)
 
                 // Guardamos el resultado de la edad en una variable para usarla fácilmente
-                val edadValida = tieneMinimo13(birthday)
+                val edadValida = tieneMinimo13(birthday, formatoLogica)
 
                 // Validación básica de que no estén vacíos los campos del formulario
                 val formularioLleno = name.isNotBlank() &&
@@ -695,7 +693,7 @@ fun MainScreen(
                         Patterns.EMAIL_ADDRESS.matcher(email).matches() // Repetimos validación del Composable pero viendo que sí sea un formato válido
 
                 ProfileSaveButton(
-                    text = "Guardar Perfil",
+                    text = stringResource(R.string.seccion_5_texto_boton),
                     enabled = formularioLleno,
                     onClick = {
 
@@ -768,8 +766,7 @@ fun TopBar(
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.back_arrow),
-                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                contentDescription = "Atrás",
+                contentDescription = stringResource(R.string.top_bar_content_description),
                 tint = DarkBlue
             )
         }
@@ -825,8 +822,7 @@ fun FotoPerfil(modifier: Modifier = Modifier){
         // 1. Imagen de perfil
         Image(
             painter = painterResource(id = R.drawable.foto_perfil),
-            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-            contentDescription = "Foto de perfil",
+            contentDescription = stringResource(R.string.foto_perfil_content_description),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
@@ -848,8 +844,7 @@ fun FotoPerfil(modifier: Modifier = Modifier){
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.cambiar_foto_lapiz),
-                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                contentDescription = "Cambiar foto de perfil",
+                contentDescription = stringResource(R.string.foto_perfil_icono_content_description),
                 tint = TopBarColor,
                 modifier = Modifier.size(20.dp)
             )
@@ -863,8 +858,7 @@ fun FotoPerfil(modifier: Modifier = Modifier){
 @Composable
 fun TextFieldCommon(
     modifier: Modifier = Modifier,
-    // Ya tengo la manera de recibir el estado y la manera de modificarlo
-    name: String, // Nombre formulario. Primera sección
+    name: String,
     placeHolderText: String,
     onNameChange: (String) -> Unit
 ){
@@ -904,6 +898,10 @@ fun TextFieldBirthday(
     // Estado para controlar si el calendario se ve o no
     var showModal by remember { mutableStateOf(false) }
 
+    // Extraemos los recursos de idioma que cambiarán solos
+    val formatoLogica = stringResource(id = R.string.formato_fecha_logica)
+    val formatoVisual = stringResource(id = R.string.formato_fecha_visual)
+
     // Envolvemos el TextField en un Box principal
     Box(modifier = modifier) {
 
@@ -917,8 +915,7 @@ fun TextFieldBirthday(
             shape = RoundedCornerShape(12.dp),
             placeholder = {
                 Text(
-                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                    text = "MM/DD/YYYY",
+                    text = formatoVisual,
                     color = Neutral
                 )
             },
@@ -927,8 +924,7 @@ fun TextFieldBirthday(
                 // así que dejamos solo el Icon
                 Icon(
                     imageVector = Icons.Default.DateRange,
-                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                    contentDescription = "Seleccionar fecha de nacimiento",
+                    contentDescription = stringResource(R.string.cumpleanos_icono_content_description),
                     tint = Neutral
                 )
             },
@@ -956,7 +952,7 @@ fun TextFieldBirthday(
         DatePickerModal(
             onDateSelected = { millisSeleccionados ->
                 if (millisSeleccionados != null) {
-                    val fechaFormateada = convertMillisToDate(millisSeleccionados)
+                    val fechaFormateada = convertMillisToDate(millisSeleccionados, formatoLogica)
                     onDateChange(fechaFormateada)
                 }
             },
@@ -986,12 +982,12 @@ fun DatePickerModal(
                 onDateSelected(datePickerState.selectedDateMillis)
                 onDismiss()
             }) {
-                Text("OK")
+                Text(stringResource(R.string.texto_ok))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.texto_cancel))
             }
         }
     ) {
@@ -1001,23 +997,21 @@ fun DatePickerModal(
 
 // Función que permite transformar los milisegundos obtenidos desde el 1 de enero de 1970
 // a la actualidad en una fecha legible con formato de fecha de calendario
-fun convertMillisToDate(millis: Long): String {
-                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+fun convertMillisToDate(millis: Long, formato: String): String {
+    val formatter = SimpleDateFormat(formato, Locale.getDefault())
     // Se agrega esta línea para evitar el error del día anterior
     formatter.timeZone = TimeZone.getTimeZone("UTC")
     return formatter.format(Date(millis))
 }
 
 // Función que se encarga de validar que el usuario tenga mínimo 13 años cumplidos
-fun tieneMinimo13(fechaNacimiento: String): Boolean {
+fun tieneMinimo13(fechaNacimiento: String, formatoLogica: String): Boolean {
     // Si está vacío, ni siquiera calculamos
     if (fechaNacimiento.isBlank()) return false
 
     return try {
         // Le decimos a Kotlin cómo está escrita nuestra fecha
-        // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+        val formatter = DateTimeFormatter.ofPattern(formatoLogica)
         val fechaNac = LocalDate.parse(fechaNacimiento, formatter)
 
         // Obtenemos la fecha del celular hoy
@@ -1045,9 +1039,12 @@ fun TextFieldGender(
     var expanded by remember{
         mutableStateOf(false)
     }
+    // Extraemos las strings del archivo de strings
+    val opcion1 = stringResource(R.string.opciones_hombre)
+    val opcion2 = stringResource(R.string.opciones_mujer)
 
     // Opciones del menú
-    val opciones = listOf("Hombre", "Mujer")
+    val opciones = listOf(opcion1, opcion2)
 
     // Box principal para que el menú sepa dónde aparecer
     Box(
@@ -1063,14 +1060,12 @@ fun TextFieldGender(
                 .fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             placeholder = {
-                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                Text("Selecciona tu género", color = Neutral)
+                Text(stringResource(R.string.textfield_visual_genero), color = Neutral)
             },
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
-                    // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                    contentDescription = "Desplegar menú",
+                    contentDescription = stringResource(R.string.icono_genero_content_description),
                     tint = Neutral
                 )
             },
@@ -1133,7 +1128,7 @@ fun TextFieldPhoneNumber(
         ),
         shape = RoundedCornerShape(12.dp), // Bordes redondeados
         placeholder = {
-            Text("55 1234 5678", color = Neutral)
+            Text(stringResource(R.string.country_code_picker_placeholder), color = Neutral)
         },
 
         // Estilo de "TextField" usado a lo largo del formulario
@@ -1177,8 +1172,7 @@ fun TextFieldEmail(
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-            placeholder = { Text("ejemplo@correo.com", color = Neutral) },
+            placeholder = { Text(stringResource(R.string.text_placeholder_email), color = Neutral) },
 
             // Abre el teclado optimizado para correos, con el @ y .com de rápido acceso
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -1202,8 +1196,7 @@ fun TextFieldEmail(
         // Mensaje de error en lo que se escribe correctamente el correo electrónico
         if (isError) {
             Text(
-                // !!!!!!!!!!! ========== HARD CODING ========= !!!!!!!!!!!
-                text = "Formato de correo inválido",
+                text = stringResource(R.string.error_email),
                 color = NormalRed,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -1425,7 +1418,7 @@ fun DataScreen(
     Scaffold(
         topBar = {
             TopBar(
-                content = "Resumen de Perfil",
+                content = stringResource(R.string.data_screen_top_bar_content),
                 onBackClick = {
                     // Esto destruye la DataScreen y se regresa al formulario
                     // con todos los datos intactos
@@ -1450,7 +1443,7 @@ fun DataScreen(
             verticalArrangement = Arrangement.Top
         ) {
             Text(
-                text = "Tus datos guardados:",
+                text = stringResource(R.string.data_screen_titulo),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Black,
@@ -1461,23 +1454,22 @@ fun DataScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Juntamos el nombre y apellido en una sola fila para que se vea mejor
-            DatoFila(etiqueta = "Nombre completo", valor = "${datos.name} ${datos.lastName}")
-            DatoFila(etiqueta = "Fecha de nacimiento", valor = datos.birthday)
-            DatoFila(etiqueta = "Género", valor = datos.gender)
-            DatoFila(etiqueta = "Teléfono", valor = datos.phoneNumber)
-            DatoFila(etiqueta = "Correo", valor = datos.email)
+            DatoFila(etiqueta = stringResource(R.string.data_screen_nombre_completo), valor = "${datos.name} ${datos.lastName}")
+            DatoFila(etiqueta = stringResource(R.string.data_screen_birthdate), valor = datos.birthday)
+            DatoFila(etiqueta = stringResource(R.string.data_screen_gender), valor = datos.gender)
+            DatoFila(etiqueta = stringResource(R.string.data_screen_phone_number), valor = datos.phoneNumber)
+            DatoFila(etiqueta = stringResource(R.string.data_screen_email), valor = datos.email)
 
             // Si el usuario escribió una bio, la mostramos
             if (datos.bioText.isNotBlank()) {
-                DatoFila(etiqueta = "Biografía", valor = datos.bioText)
+                DatoFila(etiqueta = stringResource(R.string.data_screen_bio), valor = datos.bioText)
             }
 
             // Si el usuario seleccionó intereses (la lista no está vacía)
             if(datos.intereses.isNotEmpty()){
-                val textoIntereses = datos.intereses.joinToString(separator = ", ")
-                DatoFila(etiqueta = "Intereses seleccionados", valor = textoIntereses)
+                val textoIntereses = datos.intereses.joinToString(separator = stringResource(R.string.data_screen_intereses_separador))
+                DatoFila(etiqueta = stringResource(R.string.data_screen_intereses), valor = textoIntereses)
             }
-
 
             Spacer(modifier = Modifier.height(40.dp))
         }
