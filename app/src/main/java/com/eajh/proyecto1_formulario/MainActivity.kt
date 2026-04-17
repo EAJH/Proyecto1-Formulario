@@ -484,9 +484,7 @@ fun MainScreen(
                             phoneNumber = phoneNumber,
                             pickerState = pickerState
                         ) { newPhoneNumber ->
-                            if(newPhoneNumber.length <= 10 && newPhoneNumber.all{it.isDigit()}){
-                                phoneNumber = newPhoneNumber
-                            }
+                            phoneNumber = newPhoneNumber
                         }
 
                     }
@@ -689,7 +687,7 @@ fun MainScreen(
                         lastName.isNotBlank() &&
                         edadValida &&
                         gender.isNotBlank() &&
-                        phoneNumber.isNotBlank() &&
+                        pickerState.isPhoneNumberValid() && // Validación internacional automática
                         Patterns.EMAIL_ADDRESS.matcher(email).matches() // Repetimos validación del Composable pero viendo que sí sea un formato válido
 
                 ProfileSaveButton(
@@ -1115,33 +1113,51 @@ fun TextFieldPhoneNumber(
     onPhoneNumberChange: (String) -> Unit
 ){
 
-    // Composable para mostrar este elemento
-    KomposeCountryCodePicker(
-        modifier = modifier.fillMaxWidth(),
-        text = phoneNumber,
-        onValueChange = { newNumber ->
-            onPhoneNumberChange(newNumber)
-        },
-        state = pickerState,
-        textStyle = TextStyle(
-            color = Neutral
-        ),
-        shape = RoundedCornerShape(12.dp), // Bordes redondeados
-        placeholder = {
-            Text(stringResource(R.string.country_code_picker_placeholder), color = Neutral)
-        },
+    // Es error si ya escribieron algo Y la librería dice que es inválido
+    val isError = phoneNumber.isNotEmpty() && !pickerState.isPhoneNumberValid()
 
-        // Estilo de "TextField" usado a lo largo del formulario
-        colors = colors(
-            focusedContainerColor = GrayTextField,
-            unfocusedContainerColor = GrayTextField,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            cursorColor = Black,
-            focusedTextColor = Black,
-            unfocusedTextColor = Black
+    // Envolvemos en un Column para poder poner el texto debajo
+    Column(modifier = modifier) {
+
+        KomposeCountryCodePicker(
+            modifier = Modifier.fillMaxWidth(),
+            text = phoneNumber,
+            onValueChange = { newNumber ->
+                onPhoneNumberChange(newNumber)
+            },
+            state = pickerState,
+            textStyle = TextStyle(
+                color = Black
+            ),
+            shape = RoundedCornerShape(12.dp),
+            placeholder = {
+                Text(stringResource(R.string.country_code_picker_placeholder), color = Neutral)
+            },
+
+            // Colores dinámicos dependiendo de la variable isError
+            colors = colors(
+                // Si hay error, el fondo es LightRed, si no, es el Gray normal
+                focusedContainerColor = if (isError) LightRed else GrayTextField,
+                unfocusedContainerColor = if (isError) LightRed else GrayTextField,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                // Si hay error, el cursor parpadea en rojo
+                cursorColor = if (isError) NormalRed else Black,
+                focusedTextColor = Black,
+                unfocusedTextColor = Black
+            )
         )
-    )
+
+        // El mensaje de error
+        if (isError) {
+            Text(
+                text = stringResource(R.string.error_numero_telefono),
+                color = NormalRed,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
+    }
 
 }
 

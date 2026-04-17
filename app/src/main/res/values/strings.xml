@@ -62,7 +62,8 @@
     <string name="icono_genero_content_description">Desplegar menú</string>
 
     <!-- ============ Composable TextFieldPhoneNumber ========= -->
-    <string name="country_code_picker_placeholder">55 1234 5678</string>
+    <string name="country_code_picker_placeholder">Número de teléfono</string>
+    <string name="error_numero_telefono">Formato de número inválido para este país</string>
 
     <!-- ============ Composable TextFieldEmail ========= -->
     <string name="text_placeholder_email">ejemplo@correo.com</string>
