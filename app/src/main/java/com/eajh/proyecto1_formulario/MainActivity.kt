@@ -651,7 +651,7 @@ fun MainScreen(
                             modifier = Modifier.size(5.dp)
                         )
 
-                        TextFieldCommon(
+                        TextFieldCommonBio(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(140.dp),
@@ -872,6 +872,40 @@ fun TextFieldCommon(
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Next
         ),
+        placeholder = {
+            Text(
+                text = placeHolderText,
+                color = Neutral
+            )
+        },
+        colors = colors(
+            // Quita la línea inferior cuando está y no está seleccionado
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            // Define el color de fondo
+            focusedContainerColor = GrayTextField,
+            unfocusedContainerColor = GrayTextField,
+            // Define el color de las letras que escribimos
+            focusedTextColor = Black,
+            unfocusedTextColor = Black
+        )
+    )
+}
+
+@Composable
+fun TextFieldCommonBio(
+    modifier: Modifier = Modifier,
+    name: String,
+    placeHolderText: String,
+    onNameChange: (String) -> Unit
+){
+    TextField(
+        value = name,
+        onValueChange = { newName ->
+            onNameChange(newName)
+        },
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
         placeholder = {
             Text(
                 text = placeHolderText,
